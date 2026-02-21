@@ -8,17 +8,20 @@
     :root { --bg:#070b1a; --card:rgba(255,255,255,0.08); --blue:#1ea7ff; --green:#39ff88; --text:#eaf7ff; }
     * { box-sizing: border-box; }
     body { margin:0; font-family:Arial,sans-serif; color:var(--text); background:radial-gradient(circle at top, #0f1e44, var(--bg)); min-height:100vh; display:flex; flex-direction:column; }
+
     nav { display:flex; gap:16px; padding:16px 20px; background:rgba(0,0,0,0.3); backdrop-filter:blur(6px); flex-wrap:wrap; }
     nav a { color:var(--blue); text-decoration:none; font-weight:bold; }
     nav a:hover { color:var(--green); }
     .container { max-width:980px; margin:26px auto; padding:0 16px; width:100%; }
     .card { background:var(--card); border:1px solid rgba(255,255,255,0.2); border-radius:18px; padding:24px; backdrop-filter:blur(12px); box-shadow:0 0 28px rgba(30,167,255,0.15); margin-bottom:18px; }
     h1,h2 { margin-top:0; color:var(--green); }
+
     label { display:block; margin:14px 0 8px; }
     input, button { width:100%; padding:12px; border-radius:10px; border:none; }
     input { background:rgba(255,255,255,0.12); color:white; }
     button { margin-top:16px; background:linear-gradient(90deg,var(--blue),var(--green)); font-weight:bold; cursor:pointer; }
     #result { margin-top:14px; color:var(--green); }
+
     table { width:100%; border-collapse:collapse; }
     th, td { padding:10px; border-bottom:1px solid rgba(255,255,255,0.2); text-align:left; }
     th { color:var(--blue); }
@@ -28,6 +31,7 @@
 <body onload="loadVehicles()">
   <nav>
     <a href="/dashboard.html">Dashboard</a>
+
     <a href="/vehicles.html">Vehicles</a>
     <a href="/drivers.html">Drivers</a>
     <a href="/trips.html">Trips</a>
@@ -43,6 +47,7 @@
       <p id="result"></p>
     </section>
 
+
     <section class="card">
       <h2>All Vehicles</h2>
       <table>
@@ -50,6 +55,7 @@
         <tbody id="vehicleRows"></tbody>
       </table>
     </section>
+
   </main>
   <footer>Hackathon MVP - FleetFlow</footer>
 
@@ -63,6 +69,7 @@
       })
     })
       .then(res => res.json())
+
       .then(data => { document.getElementById('result').textContent = data.message; loadVehicles(); })
       .catch(() => document.getElementById('result').textContent = 'Request failed');
     }
@@ -76,6 +83,7 @@
           ).join('');
         });
     }
+
   </script>
 </body>
 </html>

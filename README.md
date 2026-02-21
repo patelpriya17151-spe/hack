@@ -1,6 +1,8 @@
 # FleetFlow
 
+
 FleetFlow is a hackathon-ready fleet and logistics MVP built with **Node.js, Express, SQLite, and vanilla HTML/CSS/JavaScript**. It helps teams manage vehicles, drivers, and trips with practical business validation and cost tracking.
+
 
 ## Features
 
@@ -9,13 +11,16 @@ FleetFlow is a hackathon-ready fleet and logistics MVP built with **Node.js, Exp
 - Vehicle management endpoint: `POST /addVehicle`
 - Driver management endpoint: `POST /addDriver`
 - Trip management endpoint: `POST /createTrip`
+
 - Trip completion endpoint: `POST /completeTrip`
 - Dashboard endpoint: `GET /dashboardStats`
 - Listing endpoints: `GET /vehicles`, `GET /drivers`, `GET /trips`
+
 - Validation rules:
   - Blocks over-capacity cargo
   - Blocks expired driver licenses
   - Verifies vehicle and driver existence
+
   - Prevents assigning a vehicle already in use
 - Status logic:
   - Trip creation sets vehicle status to `In Use`
@@ -25,6 +30,7 @@ FleetFlow is a hackathon-ready fleet and logistics MVP built with **Node.js, Exp
   - Auto-calculates operational cost = fuel + maintenance
 - Static frontend pages served from `public/`
 - Modern dark glassmorphism UI with responsive layout and visible data tables
+
 
 ## Project Structure
 
@@ -56,7 +62,9 @@ node server.js
 
 Then open:
 
+
 - `http://localhost:3000/dashboard.html`
+
 - `http://localhost:3000/vehicles.html`
 - `http://localhost:3000/drivers.html`
 - `http://localhost:3000/trips.html`
@@ -69,6 +77,7 @@ When creating a trip (`POST /createTrip`):
    - If not: `Error: Vehicle Not Found!`
 2. The server checks if the selected driver exists.
    - If not: `Error: Driver Not Found!`
+
 3. The server checks if vehicle is already in use.
    - If yes: `Error: Vehicle Already In Use!`
 4. The server compares `cargo_weight` with `vehicle.max_capacity`.
@@ -86,3 +95,4 @@ When creating a trip (`POST /createTrip`):
 - GPS integration
 - AI-based route optimization
 - Predictive maintenance alerts
+

@@ -18,6 +18,7 @@ const db = new sqlite3.Database('./database.db', (err) => {
   console.log('Connected to SQLite database.');
 });
 
+
 function ensureColumn(table, column, definition) {
   db.all(`PRAGMA table_info(${table})`, (err, columns) => {
     if (err) {
@@ -31,13 +32,16 @@ function ensureColumn(table, column, definition) {
   });
 }
 
+
 db.serialize(() => {
   db.run(`
     CREATE TABLE IF NOT EXISTS vehicles (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
+
       max_capacity REAL NOT NULL,
       status TEXT NOT NULL DEFAULT 'Available'
+
     )
   `);
 
@@ -55,10 +59,12 @@ db.serialize(() => {
       vehicle_id INTEGER NOT NULL,
       driver_id INTEGER NOT NULL,
       cargo_weight REAL NOT NULL,
+
       fuel_cost REAL NOT NULL DEFAULT 0,
       maintenance_cost REAL NOT NULL DEFAULT 0,
       operational_cost REAL NOT NULL DEFAULT 0,
       status TEXT NOT NULL DEFAULT 'In Progress',
+in
       FOREIGN KEY (vehicle_id) REFERENCES vehicles(id),
       FOREIGN KEY (driver_id) REFERENCES drivers(id)
     )
@@ -69,6 +75,7 @@ db.serialize(() => {
   ensureColumn('trips', 'maintenance_cost', 'REAL NOT NULL DEFAULT 0');
   ensureColumn('trips', 'operational_cost', 'REAL NOT NULL DEFAULT 0');
   ensureColumn('trips', 'status', "TEXT NOT NULL DEFAULT 'In Progress'");
+
 });
 
 app.post('/addVehicle', (req, res) => {
@@ -79,13 +86,17 @@ app.post('/addVehicle', (req, res) => {
   }
 
   db.run(
+
     'INSERT INTO vehicles (name, max_capacity, status) VALUES (?, ?, ?)',
     [name, max_capacity, 'Available'],
+
     function (err) {
       if (err) {
         return res.status(500).json({ message: 'Database error while adding vehicle' });
       }
+
       return res.json({ message: 'Vehicle Added Successfully', id: this.lastID });
+
     }
   );
 });
@@ -104,13 +115,17 @@ app.post('/addDriver', (req, res) => {
       if (err) {
         return res.status(500).json({ message: 'Database error while adding driver' });
       }
+
       return res.json({ message: 'Driver Added Successfully', id: this.lastID });
+
     }
   );
 });
 
 app.post('/createTrip', (req, res) => {
+
   const { vehicle_id, driver_id, cargo_weight, fuel_cost = 0, maintenance_cost = 0 } = req.body;
+
 
   if (vehicle_id === undefined || driver_id === undefined || cargo_weight === undefined) {
     return res.status(400).json({ message: 'Error: vehicle_id, driver_id, and cargo_weight are required' });
@@ -120,6 +135,7 @@ app.post('/createTrip', (req, res) => {
     if (vehicleErr) {
       return res.status(500).json({ message: 'Database error while checking vehicle' });
     }
+
     if (!vehicle) {
       return res.status(404).json({ message: 'Error: Vehicle Not Found!' });
     }
@@ -127,10 +143,12 @@ app.post('/createTrip', (req, res) => {
       return res.status(400).json({ message: 'Error: Vehicle Already In Use!' });
     }
 
+
     db.get('SELECT * FROM drivers WHERE id = ?', [driver_id], (driverErr, driver) => {
       if (driverErr) {
         return res.status(500).json({ message: 'Database error while checking driver' });
       }
+
       if (!driver) {
         return res.status(404).json({ message: 'Error: Driver Not Found!' });
       }
@@ -143,6 +161,7 @@ app.post('/createTrip', (req, res) => {
       const expiryDate = new Date(driver.license_expiry);
       today.setHours(0, 0, 0, 0);
       expiryDate.setHours(0, 0, 0, 0);
+
       if (today > expiryDate) {
         return res.status(400).json({ message: 'Error: License Expired!' });
       }
@@ -154,6 +173,7 @@ app.post('/createTrip', (req, res) => {
          (vehicle_id, driver_id, cargo_weight, fuel_cost, maintenance_cost, operational_cost, status)
          VALUES (?, ?, ?, ?, ?, ?, ?)`,
         [vehicle_id, driver_id, cargo_weight, fuel_cost, maintenance_cost, operationalCost, 'In Progress'],
+
         function (insertErr) {
           if (insertErr) {
             return res.status(500).json({ message: 'Database error while creating trip' });
@@ -253,6 +273,7 @@ app.get('/dashboardStats', (_req, res) => {
     }
   );
 });
+
 
 app.listen(PORT, () => {
   console.log(`FleetFlow server running on http://localhost:${PORT}`);
