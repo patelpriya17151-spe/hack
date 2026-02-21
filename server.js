@@ -18,7 +18,6 @@ const db = new sqlite3.Database('./database.db', (err) => {
   console.log('Connected to SQLite database.');
 });
 
-
 function ensureColumn(table, column, definition) {
   db.all(`PRAGMA table_info(${table})`, (err, columns) => {
     if (err) {
@@ -32,16 +31,13 @@ function ensureColumn(table, column, definition) {
   });
 }
 
-
 db.serialize(() => {
   db.run(`
     CREATE TABLE IF NOT EXISTS vehicles (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
-
       max_capacity REAL NOT NULL,
       status TEXT NOT NULL DEFAULT 'Available'
-
     )
   `);
 
@@ -59,12 +55,10 @@ db.serialize(() => {
       vehicle_id INTEGER NOT NULL,
       driver_id INTEGER NOT NULL,
       cargo_weight REAL NOT NULL,
-
       fuel_cost REAL NOT NULL DEFAULT 0,
       maintenance_cost REAL NOT NULL DEFAULT 0,
       operational_cost REAL NOT NULL DEFAULT 0,
       status TEXT NOT NULL DEFAULT 'In Progress',
-in
       FOREIGN KEY (vehicle_id) REFERENCES vehicles(id),
       FOREIGN KEY (driver_id) REFERENCES drivers(id)
     )
@@ -75,7 +69,6 @@ in
   ensureColumn('trips', 'maintenance_cost', 'REAL NOT NULL DEFAULT 0');
   ensureColumn('trips', 'operational_cost', 'REAL NOT NULL DEFAULT 0');
   ensureColumn('trips', 'status', "TEXT NOT NULL DEFAULT 'In Progress'");
-
 });
 
 app.post('/addVehicle', (req, res) => {
@@ -86,17 +79,13 @@ app.post('/addVehicle', (req, res) => {
   }
 
   db.run(
-
     'INSERT INTO vehicles (name, max_capacity, status) VALUES (?, ?, ?)',
     [name, max_capacity, 'Available'],
-
     function (err) {
       if (err) {
         return res.status(500).json({ message: 'Database error while adding vehicle' });
       }
-
       return res.json({ message: 'Vehicle Added Successfully', id: this.lastID });
-
     }
   );
 });
@@ -115,17 +104,13 @@ app.post('/addDriver', (req, res) => {
       if (err) {
         return res.status(500).json({ message: 'Database error while adding driver' });
       }
-
       return res.json({ message: 'Driver Added Successfully', id: this.lastID });
-
     }
   );
 });
 
 app.post('/createTrip', (req, res) => {
-
   const { vehicle_id, driver_id, cargo_weight, fuel_cost = 0, maintenance_cost = 0 } = req.body;
-
 
   if (vehicle_id === undefined || driver_id === undefined || cargo_weight === undefined) {
     return res.status(400).json({ message: 'Error: vehicle_id, driver_id, and cargo_weight are required' });
@@ -139,10 +124,10 @@ app.post('/createTrip', (req, res) => {
     if (!vehicle) {
       return res.status(404).json({ message: 'Error: Vehicle Not Found!' });
     }
+
     if (vehicle.status === 'In Use') {
       return res.status(400).json({ message: 'Error: Vehicle Already In Use!' });
     }
-
 
     db.get('SELECT * FROM drivers WHERE id = ?', [driver_id], (driverErr, driver) => {
       if (driverErr) {
@@ -173,7 +158,6 @@ app.post('/createTrip', (req, res) => {
          (vehicle_id, driver_id, cargo_weight, fuel_cost, maintenance_cost, operational_cost, status)
          VALUES (?, ?, ?, ?, ?, ?, ?)`,
         [vehicle_id, driver_id, cargo_weight, fuel_cost, maintenance_cost, operationalCost, 'In Progress'],
-
         function (insertErr) {
           if (insertErr) {
             return res.status(500).json({ message: 'Database error while creating trip' });
@@ -183,7 +167,12 @@ app.post('/createTrip', (req, res) => {
             if (updateErr) {
               return res.status(500).json({ message: 'Trip created but failed to update vehicle status' });
             }
-            return res.json({ message: 'Trip Created Successfully', id: this.lastID, operational_cost: operationalCost });
+
+            return res.json({
+              message: 'Trip Created Successfully',
+              id: this.lastID,
+              operational_cost: operationalCost
+            });
           });
         }
       );
@@ -193,6 +182,7 @@ app.post('/createTrip', (req, res) => {
 
 app.post('/completeTrip', (req, res) => {
   const { trip_id } = req.body;
+
   if (trip_id === undefined) {
     return res.status(400).json({ message: 'Error: trip_id is required' });
   }
@@ -201,9 +191,11 @@ app.post('/completeTrip', (req, res) => {
     if (tripErr) {
       return res.status(500).json({ message: 'Database error while checking trip' });
     }
+
     if (!trip) {
       return res.status(404).json({ message: 'Error: Trip Not Found!' });
     }
+
     if (trip.status === 'Completed') {
       return res.status(400).json({ message: 'Error: Trip Already Completed!' });
     }
@@ -212,10 +204,12 @@ app.post('/completeTrip', (req, res) => {
       if (updateTripErr) {
         return res.status(500).json({ message: 'Database error while updating trip status' });
       }
+
       db.run('UPDATE vehicles SET status = ? WHERE id = ?', ['Available', trip.vehicle_id], (updateVehicleErr) => {
         if (updateVehicleErr) {
           return res.status(500).json({ message: 'Trip completed but failed to update vehicle status' });
         }
+
         return res.json({ message: 'Trip Completed Successfully' });
       });
     });
@@ -276,3 +270,4 @@ app.get('/dashboardStats', (req, res) => {
 app.listen(PORT, () => {
   console.log(`FleetFlow server running on http://localhost:${PORT}`);
 });
+
