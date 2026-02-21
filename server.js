@@ -258,15 +258,18 @@ app.get('/trips', (_req, res) => {
 });
 
 app.get('/dashboardStats', (_req, res) => {
-  db.get(
-    `SELECT
-      (SELECT COUNT(*) FROM vehicles) AS totalVehicles,
-      (SELECT COUNT(*) FROM drivers) AS totalDrivers,
-      (SELECT COUNT(*) FROM trips) AS totalTrips,
-      (SELECT COUNT(*) FROM vehicles WHERE status = 'In Use') AS vehiclesInUse,
-      (SELECT COUNT(*) FROM vehicles WHERE status = 'Available') AS vehiclesAvailable`,
-    (err, row) => {
-      if (err) {
+
+
+
+db.get(`
+SELECT
+    (SELECT COUNT(*) FROM vehicles) AS totalVehicles,
+    (SELECT COUNT(*) FROM drivers) AS totalDrivers,
+    (SELECT COUNT(*) FROM trips) AS totalTrips,
+    (SELECT COUNT(*) FROM vehicles WHERE status = 'In Use') AS vehiclesInUse,
+    (SELECT COUNT(*) FROM vehicles WHERE status = 'Available') AS vehiclesAvailable
+`, (err, row) => {
+      if (err) 
         return res.status(500).json({ message: 'Database error while loading dashboard stats' });
       }
       return res.json(row);
