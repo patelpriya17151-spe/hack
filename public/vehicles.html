@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FleetFlow - Vehicles</title>
+  <style>
+    :root { --bg:#070b1a; --card:rgba(255,255,255,0.08); --blue:#1ea7ff; --green:#39ff88; --text:#eaf7ff; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family:Arial,sans-serif; color:var(--text); background:radial-gradient(circle at top, #0f1e44, var(--bg)); min-height:100vh; display:flex; flex-direction:column; }
+    nav { display:flex; gap:16px; padding:16px 20px; background:rgba(0,0,0,0.3); backdrop-filter:blur(6px); }
+    nav a { color:var(--blue); text-decoration:none; font-weight:bold; }
+    nav a:hover { color:var(--green); }
+    .container { max-width:900px; margin:40px auto; padding:0 16px; width:100%; }
+    .card { background:var(--card); border:1px solid rgba(255,255,255,0.2); border-radius:18px; padding:24px; backdrop-filter:blur(12px); box-shadow:0 0 28px rgba(30,167,255,0.15); }
+    h1 { margin-top:0; color:var(--green); }
+    label { display:block; margin:14px 0 8px; }
+    input, button { width:100%; padding:12px; border-radius:10px; border:none; }
+    input { background:rgba(255,255,255,0.12); color:white; }
+    button { margin-top:16px; background:linear-gradient(90deg,var(--blue),var(--green)); font-weight:bold; cursor:pointer; }
+    #result { margin-top:14px; color:var(--green); }
+    footer { margin-top:auto; text-align:center; padding:16px; color:#9fc4ff; }
+    @media (max-width:640px) { .card { padding:18px; } nav { justify-content:center; flex-wrap:wrap; } }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/vehicles.html">Vehicles</a>
+    <a href="/drivers.html">Drivers</a>
+    <a href="/trips.html">Trips</a>
+  </nav>
+  <main class="container">
+    <section class="card">
+      <h1>Add Vehicle</h1>
+      <label for="name">Vehicle Name</label>
+      <input id="name" placeholder="e.g., Van-05" />
+      <label for="max_capacity">Max Capacity (kg)</label>
+      <input id="max_capacity" type="number" placeholder="e.g., 500" />
+      <button onclick="addVehicle()">Add Vehicle</button>
+      <p id="result"></p>
+    </section>
+  </main>
+  <footer>Hackathon MVP - FleetFlow</footer>
+
+  <script>
+    function addVehicle(){ fetch('/addVehicle', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        name:document.getElementById('name').value,
+        max_capacity:Number(document.getElementById('max_capacity').value)
+      })
+    })
+      .then(res => res.json())
+      .then(data => document.getElementById('result').textContent = data.message)
+      .catch(() => document.getElementById('result').textContent = 'Request failed');
+    }
+  </script>
+</body>
+</html>
